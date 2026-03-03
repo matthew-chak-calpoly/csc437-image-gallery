@@ -1,0 +1,5 @@
+{
+  "name": "csc437-monorepo-shared",
+  "private": true,
+  "type": "module"
+}
