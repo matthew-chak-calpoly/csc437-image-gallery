@@ -1,14 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MainLayout } from "../MainLayout.jsx";
 import { fetchAll } from "./ImageFetcher.js";
 import { ImageGrid } from "./ImageGrid.jsx";
 
 export function AllImages() {
-    const [imageData, _setImageData] = useState(fetchAll);
+    const [imageData, setImageData] = useState(undefined);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        async function loadImages() {
+            try {
+                setLoading(true)
+                setError("")
+                setImageData(await fetchAll());
+            } catch (e) {
+                setError(e.toString());
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadImages()
+    }, [])
+
+    if (loading) {
+        return (
+            <h2 aria-live="polite">Loading...</h2>
+        )
+    }
+
     return (
         <>
             <h2>All Images</h2>
-            <ImageGrid images={imageData} />
+            {error && <h2 aria-live="polite">{error}</h2>}
+            {imageData && <ImageGrid images={imageData} />}
         </>
     );
 }

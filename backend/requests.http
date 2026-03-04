@@ -1,0 +1,19 @@
+### 1️⃣ Get all images
+GET http://localhost:3000/api/images
+
+
+### 2️⃣ Get one image (replace <IMAGE_ID> with a real _id from step 1)
+GET http://localhost:3000/api/images/69a84f3f0a7262d7e013998e
+
+
+### 3️⃣ Rename the image (PATCH name)
+PATCH http://localhost:3000/api/images/69a84f3f0a7262d7e013998e
+Content-Type: application/json
+
+{
+  "name": "Blue merle herding sheep"
+}
+
+
+### 4️⃣ Fetch the same image again to verify update
+GET http://localhost:3000/api/images/69a84f3f0a7262d7e013998e
