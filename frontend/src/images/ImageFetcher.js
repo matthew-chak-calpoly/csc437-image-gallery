@@ -1,64 +1,56 @@
 const BASE_URL = "/api/images";
 
 function waitDuration(numMs) {
-    return new Promise(resolve => setTimeout(resolve, numMs));
+  return new Promise((resolve) => setTimeout(resolve, numMs));
 }
 
-export async function fetchAll(authToken) {
-    await waitDuration(1000);
-    const response = await fetch(BASE_URL, {
-        headers: {
-            "Authorization": `Bearer ${authToken}`
-        }
-    });
+export async function fetchAll(makeAuthenticatedApiRequest) {
+  await waitDuration(1000);
 
-    if (!response.ok) {
-        throw new Error("Failed to fetch images");
-    }
+  const response = await makeAuthenticatedApiRequest(BASE_URL);
 
-    return await response.json();
+  if (!response.ok) {
+    throw new Error("Failed to fetch images");
+  }
+
+  return await response.json();
 }
 
-export async function fetchById(id, authToken) {
-    await waitDuration(1000);
-    const response = await fetch(`${BASE_URL}/${id}`, {
-        headers: {
-            "Authorization": `Bearer ${authToken}`
-        }
-    });
+export async function fetchById(id, makeAuthenticatedApiRequest) {
+  await waitDuration(1000);
 
-    if (!response.ok) {
-        throw new Error("Failed to fetch images");
-    }
+  const response = await makeAuthenticatedApiRequest(`${BASE_URL}/${id}`);
 
-    return await response.json();
+  if (!response.ok) {
+    throw new Error("Failed to fetch images");
+  }
+
+  return await response.json();
 }
 
-export async function renameImage(id, name, authToken) {
-    await waitDuration(1000);
+export async function renameImage(id, name, makeAuthenticatedApiRequest) {
+  await waitDuration(1000);
 
-    const response = await fetch(`${BASE_URL}/${id}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${authToken}`
-        },
-        body: JSON.stringify({ name }),
-    });
+  const response = await makeAuthenticatedApiRequest(`${BASE_URL}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  });
 
-    if (!response.ok) {
-        let errorMessage = "Request failed";
+  if (!response.ok) {
+    let errorMessage = "Request failed";
 
-        try {
-            const errorBody = await response.json();
-            errorMessage = errorBody.message || errorBody.error || errorMessage;
-        } catch {
-            // In case response has no JSON body (unlikely here, but safe)
-        }
-
-        throw new Error(errorMessage);
+    try {
+      const errorBody = await response.json();
+      errorMessage = errorBody.message || errorBody.error || errorMessage;
+    } catch {
+      // ignore malformed or empty error responses
     }
 
-    // 204 No Content
-    return;
+    throw new Error(errorMessage);
+  }
+
+  return;
 }

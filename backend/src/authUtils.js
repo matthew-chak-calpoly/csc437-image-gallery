@@ -28,7 +28,6 @@ export function verifyAuthToken(req, res, next) {
     const authHeader = req.get("Authorization");
     // This header's value should say "Bearer <token string>".  Discard the Bearer part.
     const token = authHeader && authHeader.split(" ")[1];
-    console.log("got token", token)
 
     if (!token) {
         res.status(401).end(); // No token -- cancel subsequent handlers

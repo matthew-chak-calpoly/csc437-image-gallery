@@ -1,4 +1,6 @@
 import express from "express";
+import { imageMiddlewareFactory, handleImageFileErrors } from "../imageUploadMiddleware.js";
+import { getEnvVar } from "../getEnvVar.js";
 
 const MAX_NAME_LENGTH = 100
 
@@ -15,6 +17,24 @@ export function registerImageRoutes(app, imageProvider) {
             res.status(500).json({ error: "Failed to fetch images" });
         }
     });
+
+    // POST /api/images
+    app.post(
+        "/api/images",
+        imageMiddlewareFactory.single("image"),
+        handleImageFileErrors,
+        async (req, res) => {
+            if (!req.file || !req.body.name){
+                res.status(400).json({ error: "Require both an image file and name" })
+            }
+            const newId = await imageProvider.createImage(
+                `/${getEnvVar("IMAGE_UPLOAD_DIR")}/${req.file.filename}`,
+                req.body.name,
+                req.userInfo.username
+            )
+            res.status(201).send({ newId })
+        }
+    );
 
     // GET /api/images/:imageId
     router.get("/:imageId", async (req, res) => {

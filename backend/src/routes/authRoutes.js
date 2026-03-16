@@ -31,7 +31,7 @@ export function registerAuthRoutes(app, credentialsProvider) {
 
     const token = await generateAuthToken(username);
 
-    res.status(200).send({ token })
+    res.status(201).send({ token })
   });
 
   // Login / create session

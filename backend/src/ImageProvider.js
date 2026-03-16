@@ -62,4 +62,16 @@ export class ImageProvider {
 
     return result.matchedCount > 0;
   }
+
+  async createImage(src, name, authorId) {
+    const trimmedName = typeof name === "string" ? name.trim() : "";
+
+    const result = await this.collection.insertOne({
+      src,
+      name: trimmedName,
+      authorId,
+    });
+
+    return result.insertedId.toString();
+  }
 }
