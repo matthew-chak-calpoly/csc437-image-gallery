@@ -3,7 +3,7 @@ import { MainLayout } from "../MainLayout.jsx";
 import { fetchAll } from "./ImageFetcher.js";
 import { ImageGrid } from "./ImageGrid.jsx";
 
-export function AllImages() {
+export function AllImages(props) {
     const [imageData, setImageData] = useState(undefined);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -13,7 +13,8 @@ export function AllImages() {
             try {
                 setLoading(true)
                 setError("")
-                setImageData(await fetchAll());
+                console.log("fetching all", props.authToken)
+                setImageData(await fetchAll(props.authToken));
             } catch (e) {
                 setError(e.toString());
             } finally {

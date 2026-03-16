@@ -45,18 +45,21 @@ export class ImageProvider {
     return await this.collection.aggregate(pipeline).next();
   }
 
-  async renameImage(id, newName) {
+  async renameImage(id, newName, username) {
+    if (!ObjectId.isValid(id)) return false;
+
     const objectId = new ObjectId(id);
 
     const result = await this.collection.updateOne(
-        { _id: objectId },
-        { $set: { name: newName.trim() } }
+      {
+        _id: objectId,
+        authorId: username   // verify ownership here
+      },
+      {
+        $set: { name: newName.trim() }
+      }
     );
 
-    if (result.matchedCount === 0) {
-        return false;
-    }
-
-    return true;
+    return result.matchedCount > 0;
   }
 }

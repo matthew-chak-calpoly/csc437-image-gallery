@@ -4,7 +4,7 @@ import { fetchById } from "./ImageFetcher.js";
 import { ImageNameEditor } from "./ImageNameEditor.jsx";
 import { renameImage } from "./ImageFetcher.js";
 
-export function ImageDetails() {
+export function ImageDetails(props) {
     const { imageId } = useParams();
     const [image, setImage] = useState(undefined);
     const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ export function ImageDetails() {
         try {
             setLoading(true)
             setError("")
-            const image = await fetchById(imageId)
+            const image = await fetchById(imageId, props.authToken)
             setImage(image)
         } catch (e) {
             setError(e.toString())
@@ -30,7 +30,7 @@ export function ImageDetails() {
     async function handleRename(imageId, nameInput) {
         try {
             setLoading(true);
-            await renameImage(imageId, nameInput);
+            await renameImage(imageId, nameInput, props.authToken);
             await loadImage();
         } catch (e) {
             setError(e.toString())

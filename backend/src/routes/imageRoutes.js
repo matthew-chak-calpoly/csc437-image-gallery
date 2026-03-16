@@ -43,35 +43,36 @@ export function registerImageRoutes(app, imageProvider) {
         try {
             const { imageId } = req.params;
             const { name } = req.body;
+            const username = req.userInfo.username;
 
             if (!imageId) {
-                return res.status(400).send({
-                    error: "Bad Request",
-                    message: "imageId is required"
-                });
+            return res.status(400).send({
+                error: "Bad Request",
+                message: "imageId is required"
+            });
             }
 
             if (typeof name !== "string" || name.trim().length === 0) {
-                return res.status(400).send({
-                    error: "Bad Request",
-                    message: "A valid image name is required"
-                });
+            return res.status(400).send({
+                error: "Bad Request",
+                message: "A valid image name is required"
+            });
             }
 
             if (name.length > MAX_NAME_LENGTH) {
-                return res.status(413).send({
-                    error: "Content Too Large",
-                    message: `Image name exceeds ${MAX_NAME_LENGTH} characters`
-                });
+            return res.status(413).send({
+                error: "Content Too Large",
+                message: `Image name exceeds ${MAX_NAME_LENGTH} characters`
+            });
             }
 
-            const renamed = await imageProvider.renameImage(imageId, name);
+            const renamed = await imageProvider.renameImage(imageId, name, username);
 
             if (!renamed) {
-                return res.status(404).send({
-                    error: "Not Found",
-                    message: "Image does not exist"
-                });
+            return res.status(404).send({
+                error: "Not Found",
+                message: "Image not found or you are not the owner"
+            });
             }
 
             return res.status(204).send();
@@ -79,8 +80,8 @@ export function registerImageRoutes(app, imageProvider) {
         } catch (err) {
             console.error(err);
             return res.status(400).send({
-                error: "Bad Request",
-                message: "Invalid request format"
+            error: "Bad Request",
+            message: "Invalid request format"
             });
         }
     });

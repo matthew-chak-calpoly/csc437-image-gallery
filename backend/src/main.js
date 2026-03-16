@@ -4,6 +4,9 @@ import { VALID_ROUTES } from "../../shared/ValidRoutes.js";
 import { connectMongo } from "./connectMongo.js";
 import { ImageProvider } from "./ImageProvider.js";
 import { registerImageRoutes } from "./routes/imageRoutes.js";
+import { registerAuthRoutes } from "./routes/authRoutes.js";
+import { CredentialsProvider } from "./CredentialsProvider.js";
+import { verifyAuthToken } from "./authUtils.js";
 
 const PORT = Number.parseInt(getEnvVar("PORT", false), 10) || 3000;
 const STATIC_DIR = getEnvVar("STATIC_DIR") || "public";
@@ -11,15 +14,18 @@ const app = express();
 
 const mongoClient = await connectMongo();
 const imageProvider = new ImageProvider(mongoClient);
+const credentialsProvider = new CredentialsProvider(mongoClient)
 
 app.use(express.static(STATIC_DIR));
 app.use(express.json())
+app.use("/api/images", verifyAuthToken);
 
 app.get("/api/hello", (req, res) => {
     res.send("Hello, World");
 });
 
 registerImageRoutes(app, imageProvider);
+registerAuthRoutes(app, credentialsProvider);
 
 app.get(Object.values(VALID_ROUTES), (req, res) => {
     res.sendFile("index.html", { root: STATIC_DIR });

@@ -4,9 +4,13 @@ function waitDuration(numMs) {
     return new Promise(resolve => setTimeout(resolve, numMs));
 }
 
-export async function fetchAll() {
+export async function fetchAll(authToken) {
     await waitDuration(1000);
-    const response = await fetch(BASE_URL);
+    const response = await fetch(BASE_URL, {
+        headers: {
+            "Authorization": `Bearer ${authToken}`
+        }
+    });
 
     if (!response.ok) {
         throw new Error("Failed to fetch images");
@@ -15,9 +19,13 @@ export async function fetchAll() {
     return await response.json();
 }
 
-export async function fetchById(id) {
+export async function fetchById(id, authToken) {
     await waitDuration(1000);
-    const response = await fetch(`${BASE_URL}/${id}`);
+    const response = await fetch(`${BASE_URL}/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${authToken}`
+        }
+    });
 
     if (!response.ok) {
         throw new Error("Failed to fetch images");
@@ -26,13 +34,14 @@ export async function fetchById(id) {
     return await response.json();
 }
 
-export async function renameImage(id, name) {
+export async function renameImage(id, name, authToken) {
     await waitDuration(1000);
 
     const response = await fetch(`${BASE_URL}/${id}`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
         },
         body: JSON.stringify({ name }),
     });
